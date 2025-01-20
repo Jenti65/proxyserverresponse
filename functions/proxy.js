@@ -23,20 +23,15 @@ exports.handler = async (event, context) => {
     };
   }
 
-  // Manually apply CORS middleware for POST requests
-  let corsHeaders = {};
-  corsMiddleware({ method: event.httpMethod, headers: event.headers }, {}, () => {
-    corsHeaders = {
-      'Access-Control-Allow-Origin': corsOptions.origin,
-      'Access-Control-Allow-Methods': corsOptions.methods,
-      'Access-Control-Allow-Headers': corsOptions.allowedHeaders,
-    };
-  });
-
+  // Apply CORS headers to the POST request (without using res.setHeader)
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
-      headers: corsHeaders,
+      headers: {
+        'Access-Control-Allow-Origin': '*', // Replace '*' with your Shopify domain if needed
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
       body: JSON.stringify({ error: 'Method Not Allowed' }),
     };
   }
@@ -52,14 +47,22 @@ exports.handler = async (event, context) => {
 
     return {
       statusCode: 200,
-      headers: corsHeaders,
+      headers: {
+        'Access-Control-Allow-Origin': '*', // Replace '*' with your Shopify domain if needed
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
       body: JSON.stringify({ success: true, data: response.data }),
     };
   } catch (error) {
     console.error('Error:', error.message);
     return {
       statusCode: 500,
-      headers: corsHeaders,
+      headers: {
+        'Access-Control-Allow-Origin': '*', // Replace '*' with your Shopify domain if needed
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
       body: JSON.stringify({ success: false, error: error.message }),
     };
   }
